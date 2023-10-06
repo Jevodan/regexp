@@ -29,11 +29,11 @@ func main() {
 	defer outputFile.Close()
 
 	writer := bufio.NewWriter(outputFile)
-
+	re := regexp.MustCompile(`([0-9]+)([+-/*]{1})([0-9]+)\=\?`)
 	for index, line := range dataFile {
 		index++
 		data := []byte(line)
-		re := regexp.MustCompile(`([0-9]+)([+-/*]{1})([0-9]+)\=\?`)
+
 		testStr := string(data)
 
 		arr := re.FindAllStringSubmatch(testStr, -1)
