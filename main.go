@@ -28,8 +28,10 @@ func main() {
 
 	defer outputFile.Close()
 
-	writer := bufio.NewWriter(outputFile)
+	// отбираем выражения типа 2+3=?
 	re := regexp.MustCompile(`([0-9]+)([+-/*]{1})([0-9]+)\=\?`)
+
+	writer := bufio.NewWriter(outputFile)
 	for index, line := range dataFile {
 		index++
 		data := []byte(line)
@@ -43,6 +45,7 @@ func main() {
 			if err1 != nil {
 				fmt.Println("Что то пошло не так: ", err1)
 			}
+			// формируем формат записи в выходной файл
 			dsave := fmt.Sprintf("%s%s%s%s%d\n", arr[0][1], arr[0][2], arr[0][3], "=", int(result))
 			_, err := writer.Write([]byte(dsave))
 			if err != nil {
@@ -92,6 +95,7 @@ func getOPutputFile(nameFile string) *os.File {
 	file, err := os.OpenFile(nameFile, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println("Ошибка при открытии файла: ", err)
+		os.Exit(1)
 	}
 	return file
 }
