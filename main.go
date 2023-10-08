@@ -23,8 +23,16 @@ func main() {
 		arg2 = os.Args[2]
 	}
 
-	dataFile := getLinesFiles(arg1)
-	outputFile := getOPutputFile(arg2)
+	dataFile, err := getLinesFiles(arg1)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	outputFile, err := getOPutputFile(arg2)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	defer outputFile.Close()
 
@@ -58,8 +66,8 @@ func main() {
 		}
 	}
 	// Вызов Flush() для записи данных из буфера в файл
-	err := writer.Flush()
-	if err != nil {
+	err2 := writer.Flush()
+	if err2 != nil {
 		fmt.Println("Ошибка при сбросе буфера:", err)
 		return
 	}
@@ -91,21 +99,22 @@ func getResult(s []string) (float64, error) {
 }
 
 // возвращает файл вывода
-func getOPutputFile(nameFile string) *os.File {
+func getOPutputFile(nameFile string) (*os.File, error) {
 	file, err := os.OpenFile(nameFile, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
-		fmt.Println("Ошибка при открытии файла: ", err)
-		os.Exit(1)
+		err := fmt.Errorf("Ошибка при открытии файла: %s", err)
+		return nil, err
 	}
-	return file
+	return file, nil
 }
 
 // вернет массив строчек входного файла
-func getLinesFiles(nameFile string) []string {
+func getLinesFiles(nameFile string) ([]string, error) {
 	dataFile, err := ioutil.ReadFile(nameFile)
 	if err != nil {
-		panic(err)
+		err := fmt.Errorf("Ошибка чтения из файла: %s", err)
+		return nil, err
 	}
 	lines := strings.Split(string(dataFile), "\n")
-	return lines
+	return lines, nil
 }
